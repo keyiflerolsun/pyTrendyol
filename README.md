@@ -1,4 +1,4 @@
-# ![pyTrendyol](https://www.trendyol.com/frontend/web/assets/images/favicon.ico) pyTrendyol
+# ![pyTrendyol](https://cdn.dsmcdn.com/web/production/favicon.ico) pyTrendyol
 
 ![Repo Boyutu](https://img.shields.io/github/repo-size/keyiflerolsun/pyTrendyol)
 ![Görüntülenme](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/keyiflerolsun/pyTrendyol&title=Görüntülenme)
