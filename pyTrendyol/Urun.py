@@ -1,10 +1,10 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from requests import get
+from requests            import get
 from requests.exceptions import ConnectionError
-from urllib.parse import unquote
-from re import search, search
-from parsel import Selector
+from urllib.parse        import unquote
+from re                  import search, search
+from parsel              import Selector
 
 class Urun:
     """
@@ -24,8 +24,8 @@ class Urun:
 
     def __init__(self):
         """Trendyol'dan hedef ürün detaylarını çevirir"""
-        self.kimlik   = {'User-Agent': 'pyTrendyol'}
-        self.ayristir = lambda berisi, gerisi, yazi : search(f'{berisi}(.*){gerisi}', yazi).group(1)
+        self.__kimlik   = {"User-Agent": "pyTrendyol"}
+        self.__ayristir = lambda berisi, gerisi, yazi : search(f'{berisi}(.*){gerisi}', yazi).group(1)
 
     def detay_ver(self, link:str) -> dict or None:
         """Trendyol'dan hedef ürün detaylarını çevirir"""
@@ -34,7 +34,7 @@ class Urun:
             return None
 
         try:
-            istek = get(link, headers=self.kimlik, allow_redirects=True)
+            istek = get(link, headers=self.__kimlik, allow_redirects=True)
         except ConnectionError:
             return None
 
@@ -61,28 +61,34 @@ class Urun:
         if not link:
             return None
 
-        url     = link + "/yorumlar"
-        istek   = get(url, headers=self.kimlik)
-        secici  = Selector(istek.text)
+        yorumlar = []
 
-        yorumlar  = secici.xpath("//div[@class='pr-rnr-com']/div[@class='rnr-com-w']")
+        url     = f"https://public-mdc.trendyol.com/discovery-web-socialgw-service/api/review/{link.split('-')[-1]}"
+        istek   = get(url, headers=self.__kimlik)
+        veriler = istek.json()["result"]["productReviews"]
 
-        veriler = []
-        for yorum in yorumlar:
-            yildiz_sayisi = 0
-            for i_yildiz in yorum.xpath(".//div[contains(@class, 'ratings')]/div"):
-                yildiz = [tek_yildiz for tek_yildiz in i_yildiz.xpath(".//div[@class='full' and @style='width:100%;max-width:100%']")]
-                yildiz_sayisi += len(yildiz)
+        sayfa = 1
+        while True:
+            yorumlar.extend(
+                {
+                    "kullanici" : yorum["userFullName"],
+                    "elit"      : yorum["isElite"],
+                    "tarih"     : yorum["lastModifiedDate"],
+                    "satici"    : yorum["sellerName"],
+                    "yildiz"    : yorum["rate"],
+                    "yorum"     : yorum["comment"]
+                }
+                    for yorum in veriler["content"]
+            )
 
-            veriler.append({
-                'kullanici' : yorum.xpath("(.//span[@class='rnr-com-usr']/text())[1]").get(),
-                'elit'      : bool(yorum.xpath("(.//span[@class='user-is-elite'])").get()),
-                'tarih'     : yorum.xpath("(.//span[@class='rnr-com-usr']/text())[2]").get(),
-                'satici'    : yorum.xpath(".//span[@class='seller-name-info']/text()").get(),
-                'yildiz'    : yildiz_sayisi,
-                'yorum'     : yorum.xpath("normalize-space(.//div[@class='rnr-com-tx'])").get()
-            })
-        return veriler
+            sayfa += 1
+            if sayfa == veriler["totalPages"]:
+                break
+
+            istek   = get(f"{url}?page={sayfa}", headers=self.__kimlik)
+            veriler = istek.json()["result"]["productReviews"]
+
+        return yorumlar
 
     def _link_ayristir(self, link:str) -> str or None:
         """Trendyol'un çeşitli formatlardaki ürün linklerini temizler"""
@@ -90,8 +96,8 @@ class Urun:
             url = link.replace('https://m.', 'https://')
         elif link.startswith('https://ty.gl'):
             try:
-                kisa_link_header = get(link, headers=self.kimlik, allow_redirects=False).headers['location']
-                url = self.ayristir("adjust_redirect=", "&adjust_t=", unquote(kisa_link_header))
+                kisa_link_header = get(link, headers=self.__kimlik, allow_redirects=False).headers['location']
+                url = self.__ayristir("adjust_redirect=", "&adjust_t=", unquote(kisa_link_header))
             except KeyError:
                 url = None
         else:

@@ -1,7 +1,7 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from setuptools import setup
-from io import open
+from io         import open
 
 setup(
     author       = "keyiflerolsun",
@@ -10,7 +10,7 @@ setup(
     packages     = ["pyTrendyol"],
 
     name         = "pyTrendyol",
-    version      = "0.0.1",
+    version      = "0.0.2",
     url          = "https://github.com/keyiflerolsun/pyTrendyol",
     description  = "Trendyol'dan veri almayı kolaylaştırmak için tasarlanan kütüphane.",
     keywords     = ["pyTrendyol", 'KekikAkademi', 'keyiflerolsun'],
@@ -28,7 +28,9 @@ setup(
 
     python_requires     = '>=3.8',
     install_requires    = [
-        "KekikTaban",
+        "setuptools",
+        "wheel",
+        "Kekik",
         "requests",
         "parsel"
     ]
