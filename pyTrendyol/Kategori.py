@@ -36,7 +36,7 @@ class Kategori:
             istek   = get(f"https://www.trendyol.com/{kategori_adi}{self.kategoriler[kategori_adi]}?pi={say}", headers=self.__kimlik)
             secici  = Selector(istek.text)
 
-            urunler = secici.xpath("//div[@class='prdct-cntnr-wrppr']//div[@class='p-card-chldrn-cntnr']")
+            urunler = secici.xpath("//div[@class='prdct-cntnr-wrppr']//div[contains(@class, 'p-card-chldrn')]")
 
             for urun in urunler:
                 yildiz_sayisi = 0

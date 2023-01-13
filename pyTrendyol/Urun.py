@@ -45,7 +45,7 @@ class Urun:
                 "link"       : link,
                 "marka"      : secici.xpath("//h1[@class='pr-new-br']/a/text()").get().strip() if secici.xpath("//h1[@class='pr-new-br']/a/text()").get() else secici.xpath("//h1[@class='pr-new-br']/text()").get().strip(),
                 "baslik"     : secici.xpath("//h1[@class='pr-new-br']/span/text()").get().strip(),
-                "resim"      : secici.xpath("//img[@class='ph-gl-img']/@src").get(),
+                "resim"      : secici.xpath("//div[@class='gallery-modal-content']//img/@src").get(),
                 "gercek"     : secici.xpath("//span[@class='prc-org']/text()").get(),
                 "indirimli"  : secici.xpath("//span[@class='prc-slg prc-slg-w-dsc']/text()").get() or secici.xpath("//span[@class='prc-slg']/text()").get(),
                 "kampanya"   : secici.xpath("//div[@class='pr-bx-pr-dsc']/text()").get(),
