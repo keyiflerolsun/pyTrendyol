@@ -22,7 +22,7 @@ class Kategori:
 
     def __init__(self):
         """Trendyol'dan hedef kategori ürünlerini çevirir"""
-        self.__kimlik = {'User-Agent': 'pyTrendyol'}
+        self.__kimlik = {"User-Agent": "pyTrendyol"}
         self.kategoriler = self.__kategoriler
 
     def urunleri_ver(self, kategori_adi:str, sayfa_tara:int=1) -> list[dict] or None:
@@ -67,14 +67,14 @@ class Kategori:
     @property
     def __kategoriler(self) -> dict[str, str]:
         """mevcut kategorileri trendyol rss'inden ayrıştırıp çevirir"""
-        sitemap = get('https://www.trendyol.com/sitemap_categories.xml', headers=self.__kimlik)
+        sitemap = get("https://www.trendyol.com/sitemap_categories.xml", headers=self.__kimlik)
         secici  = Selector(sitemap.text)
 
-        linkler = [link.replace('https://m.trendyol.com/', '') for link in secici.xpath('//@href').getall()]
+        linkler = [link.replace("https://m.trendyol.com/", "") for link in secici.xpath("//@href").getall()]
 
-        return {link.split('-x-')[0].replace("https://www.trendyol.com/", "") : f"-x-{link.split('-x-')[1]}" for link in linkler}
+        return {link.split("-x-")[0].replace("https://www.trendyol.com/", "") : f"-x-{link.split('-x-')[1]}" for link in linkler}
 
     @staticmethod
     def __ascii_decode(metin:str) -> str:
         tr2eng  = str.maketrans(" .,-*/+-ıİüÜöÖçÇşŞğĞ", "________iIuUoOcCsSgG")
-        return slugify(metin.translate(tr2eng)).replace('_','-')
+        return slugify(metin.translate(tr2eng)).replace("_","-")

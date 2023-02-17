@@ -6,7 +6,7 @@ from io         import open
 setup(
     # ? Genel Bilgiler
     name         = "pyTrendyol",
-    version      = "0.0.3",
+    version      = "0.0.4",
     url          = "https://github.com/keyiflerolsun/pyTrendyol",
     description  = "Trendyol'dan veri almayı kolaylaştırmak için tasarlanan kütüphane.",
     keywords     = ["pyTrendyol", "KekikAkademi", "keyiflerolsun"],

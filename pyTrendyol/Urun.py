@@ -12,12 +12,12 @@ class Urun:
 
     Methodlar
     ----------
-        .detay_ver(link:str) -> dict or None:
+        .detay_ver(urun_link:str) -> dict or None:
             Trendyol'dan hedef ürün detaylarını çevirir
-        .yorumlar(self, link:str) -> list[dict] or None:
+        .yorumlar(self, urun_link:str) -> list[dict] or None:
             Trendyol'dan hedef ürün yorumlarını çevirir
-        ._link_ayristir(self, link:str) -> str or None:
-            Trendyol'un çeşitli formatlardaki ürün linklerini temizler
+        ._link_ayristir(self, urun_link:str) -> str or None:
+            Trendyol"un çeşitli formatlardaki ürün linklerini temizler
     """
     def __repr__(self) -> str:
         return f"{__class__.__name__} Sınıfı -- Trendyol'dan hedef ürün detaylarını çevirmek için kodlanmıştır."
@@ -25,11 +25,11 @@ class Urun:
     def __init__(self):
         """Trendyol'dan hedef ürün detaylarını çevirir"""
         self.__kimlik   = {"User-Agent": "pyTrendyol"}
-        self.__ayristir = lambda berisi, gerisi, yazi : search(f'{berisi}(.*){gerisi}', yazi).group(1)
+        self.__ayristir = lambda berisi, gerisi, yazi : search(f"{berisi}(.*){gerisi}", yazi).group(1)
 
-    def detay_ver(self, link:str) -> dict or None:
+    def detay_ver(self, urun_link:str) -> dict or None:
         """Trendyol'dan hedef ürün detaylarını çevirir"""
-        link = self._link_ayristir(link)
+        link = self._link_ayristir(urun_link)
         if not link:
             return None
 
@@ -55,9 +55,9 @@ class Urun:
         except AttributeError:
             return None
 
-    def yorumlar(self, link:str) -> list[dict] or None:
+    def yorumlar(self, urun_link:str) -> list[dict] or None:
         """Trendyol'dan hedef ürün yorumlarını çevirir"""
-        link = self._link_ayristir(link)
+        link = self._link_ayristir(urun_link)
         if not link:
             return None
 
@@ -90,17 +90,17 @@ class Urun:
 
         return yorumlar
 
-    def _link_ayristir(self, link:str) -> str or None:
+    def _link_ayristir(self, urun_link:str) -> str or None:
         """Trendyol'un çeşitli formatlardaki ürün linklerini temizler"""
-        if link.startswith('https://m.'):
-            url = link.replace('https://m.', 'https://')
-        elif link.startswith('https://ty.gl'):
+        if urun_link.startswith("https://m."):
+            url = urun_link.replace("https://m.", "https://")
+        elif urun_link.startswith("https://ty.gl"):
             try:
-                kisa_link_header = get(link, headers=self.__kimlik, allow_redirects=False).headers['location']
+                kisa_link_header = get(urun_link, headers=self.__kimlik, allow_redirects=False).headers["location"]
                 url = self.__ayristir("adjust_redirect=", "&adjust_t=", unquote(kisa_link_header))
             except KeyError:
                 url = None
         else:
-            url = link if search(r"http(?:s?):\/\/(?:www\.)?(m?.)?t?", link) else None
+            url = urun_link if search(r"http(?:s?):\/\/(?:www\.)?(m?.)?t?", urun_link) else None
 
-        return url.split('?')[0].replace('www.', '') if url else None
+        return url.split("?")[0].replace("www.", "") if url else None
