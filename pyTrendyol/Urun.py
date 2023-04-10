@@ -66,7 +66,6 @@ class Urun:
         url     = f"https://public-mdc.trendyol.com/discovery-web-socialgw-service/api/review/{link.split('-')[-1]}"
         istek   = get(url, headers=self.__kimlik)
         veriler = istek.json()["result"]["productReviews"]
-
         sayfa = 1
         while True:
             yorumlar.extend(
@@ -87,7 +86,8 @@ class Urun:
 
             istek   = get(f"{url}?page={sayfa}", headers=self.__kimlik)
             veriler = istek.json()["result"]["productReviews"]
-
+            if not veriler["content"]:
+                break
         return yorumlar
 
     def _link_ayristir(self, urun_link:str) -> str or None:
