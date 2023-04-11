@@ -2,3 +2,4 @@
 
 from pyTrendyol.Kategori import Kategori
 from pyTrendyol.Urun     import Urun
+from pyTrendyol.Link     import Link
