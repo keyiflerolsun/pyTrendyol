@@ -5,6 +5,7 @@ from requests.exceptions import ConnectionError
 from urllib.parse        import unquote
 from re                  import search, search
 from parsel              import Selector
+from pyTrendyol.Modeller import UrunDetay, Yorum
 
 class Urun:
     """
@@ -41,7 +42,7 @@ class Urun:
         secici = Selector(istek.text)
 
         try:
-            return {
+            return UrunDetay(**{
                 "link"       : link,
                 "marka"      : secici.xpath("//h1[@class='pr-new-br']/a/text()").get().strip() if secici.xpath("//h1[@class='pr-new-br']/a/text()").get() else secici.xpath("//h1[@class='pr-new-br']/text()").get().strip(),
                 "baslik"     : secici.xpath("//h1[@class='pr-new-br']/span/text()").get().strip(),
@@ -51,11 +52,11 @@ class Urun:
                 "kampanya"   : secici.xpath("//div[@class='pr-bx-pr-dsc']/text()").get(),
                 "son_fiyat"  : secici.xpath("//span[@class='prc-dsc']/text()").get(),
                 "yorumlar"   : self.yorumlar(link),
-            }
+            })
         except AttributeError:
             return None
 
-    def yorumlar(self, urun_link:str) -> list[dict] or None:
+    def yorumlar(self, urun_link:str) -> list[Yorum] or None:
         """Trendyol'dan hedef ürün yorumlarını çevirir"""
         link = self._link_ayristir(urun_link)
         if not link:
@@ -68,17 +69,17 @@ class Urun:
         veriler = istek.json()["result"]["productReviews"]
 
         sayfa = 1
-        while True:
+        while veriler["content"]:
             yorumlar.extend(
-                {
+                Yorum(**{
                     "kullanici" : yorum["userFullName"],
                     "elit"      : yorum["isElite"],
                     "tarih"     : yorum["lastModifiedDate"],
                     "satici"    : yorum["sellerName"],
                     "yildiz"    : yorum["rate"],
                     "yorum"     : yorum["comment"]
-                }
-                    for yorum in veriler["content"]
+                })
+                    for yorum in veriler["content"] if yorum
             )
 
             sayfa += 1

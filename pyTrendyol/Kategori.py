@@ -1,8 +1,9 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from Kekik    import slugify
-from requests import get
-from parsel   import Selector
+from Kekik               import slugify
+from requests            import get
+from parsel              import Selector
+from pyTrendyol.Modeller import KategoriUrun
 
 class Kategori:
     """
@@ -25,7 +26,7 @@ class Kategori:
         self.__kimlik = {"User-Agent": "pyTrendyol"}
         self.kategoriler = self.__kategoriler
 
-    def urunleri_ver(self, kategori_adi:str, sayfa_tara:int=1) -> list[dict] or None:
+    def urunleri_ver(self, kategori_adi:str, sayfa_tara:int=1) -> list[KategoriUrun] or None:
         """ilgili kategori ürünlerini istenilen sayfa sayısı boyunca listeler (her sayfada 24 ürün vardır.)"""
         kategori_adi = self.__ascii_decode(kategori_adi)
         if not self.mevcut_mu(kategori_adi):
@@ -46,7 +47,7 @@ class Kategori:
                     yildiz_sayisi += len(yildiz)
 
                 urun_bilgileri = {
-                    "link"       : "https://www.trendyol.com" + urun.xpath(".//a/@href").get(),
+                    "link"       : "https://www.trendyol.com" + urun.xpath(".//a/@href").get().split("?")[0],
                     "marka"      : urun.xpath(".//span[@class='prdct-desc-cntnr-ttl']/text()").get(),
                     "yildiz"     : yildiz_sayisi,
                     "baslik"     : urun.xpath(".//span[@class='prdct-desc-cntnr-name hasRatings']/text()").get() or urun.xpath(".//span[@class='prdct-desc-cntnr-name']/text()").get(),
@@ -54,7 +55,7 @@ class Kategori:
                     "indirimsiz" : urun.xpath("normalize-space(.//div[@class='prc-box-sllng prc-box-sllng-w-dscntd'])").get() or None,
                     "fiyat"      : urun.xpath("normalize-space(.//div[@class='product-price'])").get() or urun.xpath("normalize-space(.//div[@class='prc-box-dscntd'])").get()
                 }
-                veriler.append(urun_bilgileri)
+                veriler.append(KategoriUrun(**urun_bilgileri))
             if sayfa_tara <= 1:
                 break
 
